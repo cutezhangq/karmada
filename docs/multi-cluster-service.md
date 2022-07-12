@@ -12,14 +12,14 @@ We can install Karmada by referring to [quick-start](https://github.com/karmada-
 
 Ensure that at least two clusters have been added to Karmada, and the container networks between member clusters are connected.
 
-- If you use the `hack/local-up-karmada.sh` script to deploy Karmada, Karmada will have three member clusters, and the container networks of the `member1` and `member2` will be connected.
-- You can use `Submariner` or other related open source projects to connected networks between member clusters.
+- If you use `hack/local-up-karmada.sh` script to deploy Karmada, Karmada will have three member clusters, and the container networks of the `member1` and `member2` will be connected.
+- You can use `Submariner` or other related open source projects to connect networks between member clusters.
 
-### The ServiceExport and ServiceImport CRDs have been installed
+### ServiceExports and ServiceImport CRDs have been installed
 
 We need to install ServiceExport and ServiceImport in the member clusters.
 
-After ServiceExport and ServiceImport have been installed on the **karmada control-plane**, we can create `ClusterPropagationPolicy` to propagate those two CRDs to the member clusters.
+After ServiceExport and ServiceImport have been installed on the **Karmada control-plane**, we can create the `ClusterPropagationPolicy` to propagate those two CRDs to the member clusters.
 
 ```yaml
 # propagate ServiceExport CRD
@@ -37,7 +37,7 @@ spec:
       clusterNames:
         - member1
         - member2
----        
+---
 # propagate ServiceImport CRD
 apiVersion: policy.karmada.io/v1alpha1
 kind: ClusterPropagationPolicy
@@ -56,9 +56,9 @@ spec:
 ```
 ## Example
 
-### Step 1: Deploy service on the `member1` cluster 
+### Step 1: Deploy service on the `member1` cluster
 
-We need to deploy service on the `member1` cluster for discovery.
+We need to deploy service on the `member1` cluster for discoveries.
 
 ```yaml
 apiVersion: apps/v1
@@ -89,7 +89,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
----      
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -121,7 +121,7 @@ spec:
 
 ### Step 2: Export service to the `member2` cluster
 
-- Create a `ServiceExport` object on **karmada control-plane**, and then create a `PropagationPolicy` to propagate the `ServiceExport` object to the `member1` cluster.
+- Create a `ServiceExport` object on **Karmada control-plane**, and then create a `PropagationPolicy` to propagate the `ServiceExport` object to the `member1` cluster.
 
 ```yaml
 apiVersion: multicluster.x-k8s.io/v1alpha1
@@ -144,7 +144,7 @@ spec:
         - member1
 ```
 
-- Create a `ServiceImport` object on **karmada control-plane**, and then create a `PropagationPlicy` to propagate the `ServiceImport` object to the `member2` cluster.
+- Create a `ServiceImport` object on **Karmada control-plane**, and then create a `PropagationPlicy` to propagate the `ServiceImport` object to the `member2` cluster.
 
 ```yaml
 apiVersion: multicluster.x-k8s.io/v1alpha1
@@ -178,7 +178,7 @@ After the above steps, we can find the **derived service** which has the prefix 
 
 Start a Pod `request` on the `member2` cluster to access the ClusterIP of **derived service**:
 
-```
+```bash
 kubectl run -i --rm --restart=Never --image=jeremyot/request:0a40de8 request -- --duration={duration-time} --address={ClusterIP of derived service}
 ```
 
